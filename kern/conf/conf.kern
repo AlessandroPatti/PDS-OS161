@@ -438,3 +438,8 @@ file		test/semunit.c
 file		test/kmalloctest.c
 file		test/fstest.c
 optfile net	test/nettest.c
+
+
+
+defoption hello
+optfile hello main/hello.c

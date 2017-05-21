@@ -39,6 +39,8 @@
 #include <addrspace.h>
 #include <vm.h>
 
+#include <dumbvm.h>
+
 /*
  * Dumb MIPS-only "VM system" that is intended to only be just barely
  * enough to struggle off the ground. You should replace all of this
@@ -55,9 +57,6 @@
  * it's cutting (there are many) and why, and more importantly, how.
  */
 
-/* under dumbvm, always have 72k of user stack */
-/* (this must be > 64K so argument blocks of size ARG_MAX will fit) */
-#define DUMBVM_STACKPAGES    18
 
 /*
  * Wrap ram_stealmem in a spinlock.

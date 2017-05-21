@@ -45,6 +45,28 @@
 #include <syscall.h>
 #include <test.h>
 
+#include <dumbvm.h>
+
+/* 
+ * Print to stdout infomation about the address space
+ * providing for data seg, code seg and stack
+ * size, number of pages, starting physical and logical addresses
+ */
+void printsegsize(struct addrspace* as){
+	if (as==NULL){
+		kprintf("Error! Empty address space!\n");
+		return;
+	}
+	kprintf("\nUser program loaded:\n");
+	kprintf("##### Data segment #####\n");
+	kprintf("\tNumber of pages = %d\n\tSize = %d bytes\n\tFirst physical address = 0x%x\n\tFirst logical address = 0x%x\n", as->as_npages1, as->as_npages1*PAGE_SIZE, as->as_pbase1, as->as_vbase1);
+	kprintf("##### Code segment #####\n");
+	kprintf("\tNumber of pages = %d\n\t Size = %d bytes\n\tFirst physical address = 0x%x\n\tFirst logical address = 0x%x\n", as->as_npages2, as->as_npages2*PAGE_SIZE, as->as_pbase2, as->as_vbase2);
+	kprintf("##### Stack #####\n");
+	kprintf("\tNumber of pages = %d\n\t Size = %d bytes\n\tFirst physical address = 0x%x\n\tFirst logical address = 0x%x\n", DUMBVM_STACKPAGES, DUMBVM_STACKPAGES*PAGE_SIZE, as->as_stackpbase, USERSTACK-DUMBVM_STACKPAGES*PAGE_SIZE);
+	return;
+}
+
 /*
  * Load program "progname" and start running it in usermode.
  * Does not return except on error.
@@ -96,7 +118,10 @@ runprogram(char *progname)
 		/* p_addrspace will go away when curproc is destroyed */
 		return result;
 	}
-
+	
+	/* Print informations */
+	printsegsize(as);
+	
 	/* Warp to user mode. */
 	enter_new_process(0 /*argc*/, NULL /*userspace addr of argv*/,
 			  NULL /*userspace addr of environment*/,

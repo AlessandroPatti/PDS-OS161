@@ -35,3 +35,4 @@ options hello
 options syscalls
 options sysexit
 options vmmanager
+options fork

@@ -44,6 +44,13 @@ struct thread;
 struct vnode;
 
 /*
+ * Array of running proc. Each index correspond to the process ID (pid).
+ * It is initialized at first process creation.
+ * Declared extern and defined in proc.c 
+ */
+extern struct proc** proc_index;
+
+/*
  * Process structure.
  *
  * Note that we only count the number of threads in each process.

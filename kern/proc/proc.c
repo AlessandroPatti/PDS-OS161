@@ -49,10 +49,17 @@
 #include <addrspace.h>
 #include <vnode.h>
 
+#include <limits.h>
 /*
  * The process for the kernel; this holds all the kernel-only threads.
  */
 struct proc *kproc;
+
+/*
+ * Array of running proc. Each index correspond to the process ID (pid).
+ * It is initialized at first process creation.
+ */
+struct proc** proc_index=NULL;
 
 /*
  * Create a proc structure.
@@ -62,8 +69,22 @@ struct proc *
 proc_create(const char *name)
 {
 	struct proc *proc;
+	if(proc_index==NULL)
+		proc_index=kmalloc(PID_MAX*sizeof(proc));
+	/*find first free pid*/
+	int i;
+	for(i=PID_MIN; i<PID_MAX; i++){
+		if(proc_index[i]==NULL){
+			proc_index[i]=kmalloc(sizeof(struct proc));
+			break;
+		}
+	}
+	if(i>=PID_MAX || proc_index[i]==NULL)
+		panic("No more available pids!!!\n");
+	proc_index[i]->pid=i;
 
-	proc = kmalloc(sizeof(*proc));
+	proc = proc_index[i];
+
 	if (proc == NULL) {
 		return NULL;
 	}
@@ -167,6 +188,8 @@ proc_destroy(struct proc *proc)
 
 	KASSERT(proc->p_numthreads == 0);
 	spinlock_cleanup(&proc->p_lock);
+
+	proc_index[proc->pid]=NULL;
 
 	kfree(proc->p_name);
 	kfree(proc);

@@ -40,6 +40,7 @@
 #include <vm.h>
 
 #include <dumbvm.h>
+#include <vm_manager.h>
 
 /*
  * Dumb MIPS-only "VM system" that is intended to only be just barely
@@ -97,7 +98,7 @@ getppages(unsigned long npages)
 
 	spinlock_acquire(&stealmem_lock);
 
-	addr = ram_stealmem(npages);
+	addr=vm_allocmem(npages);
 
 	spinlock_release(&stealmem_lock);
 	return addr;
@@ -120,9 +121,10 @@ alloc_kpages(unsigned npages)
 void
 free_kpages(vaddr_t addr)
 {
-	/* nothing - leak the memory. */
-
-	(void)addr;
+	if(addr<MIPS_KSEG0)
+		panic("this is not KSEG0 memory!");
+	else
+		vm_releasemem(addr-MIPS_KSEG0);
 }
 
 void
@@ -251,12 +253,19 @@ as_create(void)
 
 	return as;
 }
-
+/*
+ * Release memory allocated for user program
+ * memorized in the structure,
+ * then destroy the structure itself
+ */
 void
 as_destroy(struct addrspace *as)
 {
 	dumbvm_can_sleep();
-	kfree(as);
+	vm_releasemem(as->as_pbase1);
+	vm_releasemem(as->as_pbase2);
+	vm_releasemem(as->as_stackpbase);
+kfree(as);
 }
 
 void

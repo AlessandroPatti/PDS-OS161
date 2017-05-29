@@ -45,6 +45,8 @@
 #define VM_FAULT_READONLY    2    /* A write to a readonly page was attempted*/
 
 
+#define MAX_RAM_SIZE 512*1024*1024
+
 /* Initialization function */
 void vm_bootstrap(void);
 
@@ -58,5 +60,5 @@ void free_kpages(vaddr_t addr);
 /* TLB shootdown handling called from interprocessor_interrupt */
 void vm_tlbshootdown(const struct tlbshootdown *);
 
-
+paddr_t ram_getfirstavailable(void);
 #endif /* _VM_H_ */

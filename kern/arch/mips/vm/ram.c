@@ -57,8 +57,8 @@ ram_bootstrap(void)
 	 * everything would get a lot more complicated. This is not a
 	 * case we are going to worry about.
 	 */
-	if (ramsize > 512*1024*1024) {
-		ramsize = 512*1024*1024;
+	if (ramsize > MAX_RAM_SIZE) {
+		ramsize = MAX_RAM_SIZE;
 	}
 
 	lastpaddr = ramsize;
@@ -150,4 +150,15 @@ ram_getfirstfree(void)
 	ret = firstpaddr;
 	firstpaddr = lastpaddr = 0;
 	return ret;
+}
+
+/* 
+ * This function is used by the dynamic allocator to retrieve the
+ * first available location at the initialization of his structure.
+ * The value returned is only valid before any use of dynamic allocator.
+ */
+paddr_t
+ram_getfirstavailable(void)
+{
+	return firstpaddr;
 }

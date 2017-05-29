@@ -448,3 +448,5 @@ optfile syscalls syscall/sys_read.c
 optfile syscalls syscall/sys_write.c
 defoption sysexit
 optfile sysexit syscall/sys_exit.c
+defoption vmmanager
+optfile vmmanager vm/vm_manager.c

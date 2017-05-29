@@ -33,3 +33,4 @@ options dumbvm			# Chewing gum and baling wire.
 
 options hello
 options syscalls
+options sysexit

@@ -102,6 +102,10 @@ proc_create(const char *name)
 
 	/* VFS fields */
 	proc->p_cwd = NULL;
+	/* Sync */
+	proc->wait_lock=lock_create("Proc lock");
+	proc->wait_cv=cv_create("Proc cv");
+	proc->wait_on=0;
 
 	return proc;
 }
@@ -190,9 +194,27 @@ proc_destroy(struct proc *proc)
 	spinlock_cleanup(&proc->p_lock);
 
 	proc_index[proc->pid]=NULL;
-
+	lock_destroy(proc->wait_lock);
+	cv_destroy(proc->wait_cv);
 	kfree(proc->p_name);
 	kfree(proc);
+}
+
+int wait_proc(struct proc* proc){
+	KASSERT(proc!=NULL);
+	lock_acquire(proc->wait_lock);
+	proc->wait_on++;
+	cv_wait(proc->wait_cv, proc->wait_lock);
+	lock_release(proc->wait_lock);
+	int err_code=proc->err_code;
+
+	lock_acquire(proc->wait_lock);
+	proc->wait_on--;
+	if(proc->wait_on==0){
+		lock_release(proc->wait_lock);
+		proc_destroy(proc);
+	}
+	return err_code;
 }
 
 /*

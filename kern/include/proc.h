@@ -37,6 +37,7 @@
  */
 
 #include <spinlock.h>
+#include <synch.h>
 
 struct addrspace;
 struct thread;
@@ -72,6 +73,11 @@ struct proc {
 
 	/* add more material here as needed */
 	pid_t pid;
+	int err_code;
+
+	struct lock* wait_lock;
+	struct cv* wait_cv;
+	unsigned int wait_on;
 };
 
 /* This is the process structure for the kernel and for kernel-only threads. */
@@ -97,6 +103,9 @@ struct addrspace *proc_getas(void);
 
 /* Change the address space of the current process, and return the old one. */
 struct addrspace *proc_setas(struct addrspace *);
+
+/* Sync among different processes */
+int wait_proc(struct proc* proc);
 
 
 #endif /* _PROC_H_ */

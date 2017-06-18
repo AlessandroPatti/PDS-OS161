@@ -453,3 +453,9 @@ optfile vmmanager vm/vm_manager.c
 defoption fork
 optfile fork syscall/sys_waitpid.c
 optfile fork syscall/sys_getpid.c
+defoption IO
+optfile IO syscall/sys_open.c
+optfile IO syscall/sys_close.c
+optfile IO syscall/file_manager.c
+optfile IO syscall/sys_remove.c
+

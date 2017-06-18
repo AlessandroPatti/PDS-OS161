@@ -63,4 +63,7 @@ int sys_write(int fd, const void* buf, size_t buflen, int* retval);
 int sys_exit(int err_code);
 pid_t sys_waitpid(pid_t pid, int* retval, int flags);
 pid_t sys_getpid(void);
+int sys_open(char* pathname, int flags, int* retval);
+int sys_close(int fd);
+int sys_remove(char* pathname);
 #endif /* _SYSCALL_H_ */

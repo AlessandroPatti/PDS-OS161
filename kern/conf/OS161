@@ -36,3 +36,4 @@ options syscalls
 options sysexit
 options vmmanager
 options fork
+options IO
